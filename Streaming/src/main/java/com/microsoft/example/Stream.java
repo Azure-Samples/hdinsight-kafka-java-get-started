@@ -34,7 +34,6 @@ public class Stream
         KStream<String, Long> wordCounts = sentences
                 .flatMapValues(value -> Arrays.asList(value.toLowerCase().split("\\W+")))
                 .map((key, word) -> new KeyValue<>(word, word))
-                .through("RekeyedIntermediateTopic")
                 .countByKey("Counts")
                 .toStream();
         wordCounts.to(stringSerde, longSerde, "wordcounts");
