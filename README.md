@@ -97,9 +97,14 @@ NOTE: The streaming example expects that you have already setup the `test` topic
    
     Replace **SSHUSER** with the SSH user for your cluster, and replace **CLUSTERNAME** with the name of your cluster. When prompted enter the password for the SSH user.
 
-3. Once the file has been uploaded, return to the SSH connection to your HDInsight cluster and use the following to start the streaming process in the background:
+3. Once the file has been uploaded, return to the SSH connection to your HDInsight cluster and use the following commands to create the `wordcount` and `wordcount-example-Counts-changelog` topics:
 
-        java -jar kafka-streaming.jar $KAFKABROKERS $KAFKAZKHOSTS 2>/dev/null &
+        /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount --zookeeper $KAFKAZKHOSTS
+        /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --zookeeper $KAFKAZKHOSTS
+
+4. Use the following command to start the streaming process in the background:
+
+        java -jar kafka-streaming.jar $KAFKABROKERS 2>/dev/null &
 
 4. While it is running, use the producer to send messages to the `test` topic:
 
@@ -107,7 +112,7 @@ NOTE: The streaming example expects that you have already setup the `test` topic
 
 6. Use the following to view the output that is written to the `wordcounts` topic:
    
-        /usr/hdp/current/kafka-broker/bin/kafka-console-consumer.sh --bootstrap-server $KAFKAZKHOSTS --topic wordcounts --from-beginning --formatter kafka.tools.DefaultMessageFormatter --property print.key=true --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+        /usr/hdp/current/kafka-broker/bin/kafka-console-consumer.sh --bootstrap-server $KAFKABROKERS --topic wordcounts --from-beginning --formatter kafka.tools.DefaultMessageFormatter --property print.key=true --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
    
     NOTE: You have to tell the consumer to print the key (which contains the word value) and the deserializer to use for the key and value in order to view the data.
    
