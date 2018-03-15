@@ -14,7 +14,7 @@ There are two projects included in this repository:
 
 * Streaming: This contains an application that uses the Kafka streaming API (in Kafka 0.10.0 or higher) that reads data from the `test` topic, splits the data into words, and writes a count of words into the `wordcounts` topic.
 
-NOTE: This both projects assume Kafka 0.10.0, which is available with Kafka on HDInsight cluster version 3.5.
+NOTE: This both projects assume Kafka 0.10.0, which is available with Kafka on HDInsight cluster version 3.6.
 
 ## Producer and Consumer
 
@@ -22,7 +22,7 @@ To run the consumer and producer example, use the following steps:
 
 1. Fork/Clone the repository to your development environment.
 
-2. Install Java JDK 7 or higher. This was tested with Oracle Java 7 and 8, but should work under things like OpenJDK as well.
+2. Install Java JDK 8 or higher. This was tested with Oracle Java 8, but should work under things like OpenJDK as well.
 
 3. Install [Maven](http://maven.apache.org/).
 
@@ -45,9 +45,10 @@ To run the consumer and producer example, use the following steps:
 
 7. Use the following commands in the SSH session to get the Zookeeper hosts and Kafka brokers for the cluster. You need this information when working with Kafka. Note that JQ is also installed, as it makes it easier to parse the JSON returned from Ambari. Replace __PASSWORD__ with the login (admin) password for the cluster. Replace __KAFKANAME__ with the name of the Kafka on HDInsight cluster.
 
-        sudo apt -y install JQ
-        export KAFKAZKHOSTS=`curl --silent -u admin:PASSWORD -G http://headnodehost:8080/api/v1/clusters/KAFKANAME/services/ZOOKEEPER/components/ZOOKEEPER_SERVER | jq -r '["\(.host_components[].HostRoles.host_name):2181"] | join(",")'`
-        export KAFKABROKERS=`curl --silent -u admin:'PASSWORD' -G https://CLUSTERNAME.azurehdinsight.net/api/v1/clusters/CLUSTERNAME/services/KAFKA/components/KAFKA_BROKER | jq -r '["\(.host_components[].HostRoles.host_name):9092"] | join(",")'`
+        sudo apt -y install jq
+        export KAFKAZKHOSTS=`curl -sS -u admin:$PASSWORD -G https://$CLUSTERNAME.azurehdinsight.net/api/v1/clusters/$CLUSTERNAME/services/ZOOKEEPER/components/ZOOKEEPER_SERVER | jq -r '["\(.host_components[].HostRoles.host_name):2181"] | join(",")' | cut -d',' -f1,2`
+
+        export KAFKABROKERS=`curl -sS -u admin:$PASSWORD -G https://$CLUSTERNAME.azurehdinsight.net/api/v1/clusters/$CLUSTERNAME/services/KAFKA/components/KAFKA_BROKER | jq -r '["\(.host_components[].HostRoles.host_name):9092"] | join(",")' | cut -d',' -f1,2`
 
 8. Use the following to verify that the environment variables have been correctly populated:
 
@@ -56,7 +57,7 @@ To run the consumer and producer example, use the following steps:
 
     The following is an example of the contents of `$KAFKAZKHOSTS`:
    
-        zk0-kafka.eahjefxxp1netdbyklgqj5y1ud.ex.internal.cloudapp.net:2181,zk2-kafka.eahjefxxp1netdbyklgqj5y1ud.ex.internal.cloudapp.net:2181,zk3-kafka.eahjefxxp1netdbyklgqj5y1ud.ex.internal.cloudapp.net:2181
+        zk0-kafka.eahjefxxp1netdbyklgqj5y1ud.ex.internal.cloudapp.net:2181,zk2-kafka.eahjefxxp1netdbyklgqj5y1ud.ex.internal.cloudapp.net:2181
    
     The following is an example of the contents of `$KAFKABROKERS`:
    
@@ -64,7 +65,7 @@ To run the consumer and producer example, use the following steps:
 
     NOTE: This information may change as you perform scaling operations on the cluster, as this adds and removes worker nodes. You should always retrieve the Zookeeper and Broker information before working with Kafka.
     
-    IMPORTANT: You don't have to provide all broker or Zookeeper nodes. A connection to one broker or Zookeeper node can be used to learn about the others.
+    IMPORTANT: You don't have to provide all broker or Zookeeper nodes. A connection to one broker or Zookeeper node can be used to learn about the others. In this example, the list of hosts is trimmed to two entries.
 
 9. This example uses a topic named `test`. Use the following to create this topic:
 
@@ -72,17 +73,13 @@ To run the consumer and producer example, use the following steps:
 
 10. Use the producer-consumer example to write records to the topic:
    
-        ./kafka-producer-consumer.jar producer $KAFKABROKERS
-
-    If you receive a permission denied error, use the following to make the file executable and then run it again:
-
-        chmod +x kafka-producer-consumer.jar
+        java -jar kafka-producer-consumer.jar producer $KAFKABROKERS
     
     A counter displays how many records have been written.
 
 11. Use the producer-consumer to read the records that were just written:
 
-        ./kafka-producer-consumer.jar consumer $KAFKABROKERS
+        java -jar kafka-producer-consumer.jar consumer $KAFKABROKERS
     
     This returns a list of the random sentences, along with a count of how many are read.
 
@@ -102,15 +99,15 @@ NOTE: The streaming example expects that you have already setup the `test` topic
 
 3. Once the file has been uploaded, return to the SSH connection to your HDInsight cluster and use the following to start the streaming process in the background:
 
-        ./kafka-streaming.jar $KAFKABROKERS $KAFKAZKHOSTS 2>/dev/null &
+        java -jar kafka-streaming.jar $KAFKABROKERS $KAFKAZKHOSTS 2>/dev/null &
 
 4. While it is running, use the producer to send messages to the `test` topic:
 
-        ./kafka-producer-consumer.jar producer $KAFKABROKERS &>/dev/null &
+        java -jar kafka-producer-consumer.jar producer $KAFKABROKERS &>/dev/null &
 
 6. Use the following to view the output that is written to the `wordcounts` topic:
    
-        /usr/hdp/current/kafka-broker/bin/kafka-console-consumer.sh --zookeeper $KAFKAZKHOSTS --topic wordcounts --from-beginning --formatter kafka.tools.DefaultMessageFormatter --property print.key=true --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+        /usr/hdp/current/kafka-broker/bin/kafka-console-consumer.sh --bootstrap-server $KAFKAZKHOSTS --topic wordcounts --from-beginning --formatter kafka.tools.DefaultMessageFormatter --property print.key=true --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
    
     NOTE: You have to tell the consumer to print the key (which contains the word value) and the deserializer to use for the key and value in order to view the data.
    
