@@ -20,7 +20,7 @@ public class Stream
         // Brokers
         streamsConfig.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, args[0]);
         // Zookeeper
-        streamsConfig.put(StreamsConfig.ZOOKEEPER_CONNECT_CONFIG, args[1]);
+        //streamsConfig.put(StreamsConfig.ZOOKEEPER_CONNECT_CONFIG, args[1]);
         // SerDes for key and values
         streamsConfig.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         streamsConfig.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
