@@ -73,13 +73,13 @@ To run the consumer and producer example, use the following steps:
 
 10. Use the producer-consumer example to write records to the topic:
    
-        java -jar kafka-producer-consumer.jar producer $KAFKABROKERS
+        java -jar kafka-producer-consumer.jar producer test $KAFKABROKERS
     
     A counter displays how many records have been written.
 
 11. Use the producer-consumer to read the records that were just written:
 
-        java -jar kafka-producer-consumer.jar consumer $KAFKABROKERS
+        java -jar kafka-producer-consumer.jar consumer test $KAFKABROKERS
     
     This returns a list of the random sentences, along with a count of how many are read.
 
@@ -108,7 +108,7 @@ NOTE: The streaming example expects that you have already setup the `test` topic
 
 4. While it is running, use the producer to send messages to the `test` topic:
 
-        java -jar kafka-producer-consumer.jar producer $KAFKABROKERS &>/dev/null &
+        java -jar kafka-producer-consumer.jar producer test $KAFKABROKERS &>/dev/null &
 
 6. Use the following to view the output that is written to the `wordcounts` topic:
    
