@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.Arrays;
 
 public class Consumer {
-    public static void consume(String brokers, String groupId) {
+    public static int consume(String brokers, String groupId, String topicName) {
         // Create a consumer
         KafkaConsumer<String, String> consumer;
         // Configure the consumer
@@ -22,10 +22,14 @@ public class Consumer {
         // When a group is first created, it has no offset stored to start reading from. This tells it to start
         // with the earliest record in the stream.
         properties.setProperty("auto.offset.reset","earliest");
+
+        // specify the protocol for SSL Encryption This is needed for secure clusters
+        //properties.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+
         consumer = new KafkaConsumer<>(properties);
 
         // Subscribe to the 'test' topic
-        consumer.subscribe(Arrays.asList("test"));
+        consumer.subscribe(Arrays.asList(topicName));
 
         // Loop until ctrl + c
         int count = 0;
