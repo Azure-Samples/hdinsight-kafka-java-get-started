@@ -23,7 +23,7 @@ public class Consumer {
         // with the earliest record in the stream.
         properties.setProperty("auto.offset.reset","earliest");
 
-        // specify the protocol for SSL Encryption This is needed for secure clusters
+        // specify the protocol for Domain Joined clusters
         //properties.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
 
         consumer = new KafkaConsumer<>(properties);
