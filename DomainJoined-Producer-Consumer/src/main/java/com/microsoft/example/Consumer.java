@@ -3,6 +3,7 @@ package com.microsoft.example;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.CommonClientConfigs;
 import java.util.Properties;
 import java.util.Arrays;
 

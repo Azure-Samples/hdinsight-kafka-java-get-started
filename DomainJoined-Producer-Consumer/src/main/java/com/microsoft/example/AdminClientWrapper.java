@@ -23,17 +23,17 @@ import java.io.IOException;
 public class AdminClientWrapper {
 
     public static Properties getProperties(String brokers) {
-        Properties clientProperties = new Properties();
-        clientProperties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        Properties properties = new Properties();
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
 
         // Set how to serialize key/value pairs
-        clientProperties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        clientProperties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
 		
 		// specify the protocol for Domain Joined clusters
         properties.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
 		
-        return clientProperties;
+        return properties;
     }
 
     public static void describeTopics(String brokers, String topicName) throws IOException {
