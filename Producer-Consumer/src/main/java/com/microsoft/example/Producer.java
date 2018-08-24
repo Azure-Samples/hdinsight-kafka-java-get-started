@@ -28,7 +28,7 @@ public class Producer
         // Set how to serialize key/value pairs
         properties.setProperty("key.serializer","org.apache.kafka.common.serialization.StringSerializer");
         properties.setProperty("value.serializer","org.apache.kafka.common.serialization.StringSerializer");
-        // specify the protocol for SSL Encryption This is needed for secure clusters
+        // specify the protocol for Domain Joined clusters
         //properties.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
