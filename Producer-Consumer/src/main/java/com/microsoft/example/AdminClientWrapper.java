@@ -32,7 +32,7 @@ public class AdminClientWrapper {
 		// specify the protocol for Domain Joined clusters
         //properties.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
 		
-        return clientProperties;
+        return properties;
     }
 
     public static void describeTopics(String brokers, String topicName) throws IOException {
