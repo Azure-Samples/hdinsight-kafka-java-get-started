@@ -97,9 +97,9 @@ NOTE: The streaming example expects that you have already setup the `test` topic
    
     Replace **SSHUSER** with the SSH user for your cluster, and replace **CLUSTERNAME** with the name of your cluster. When prompted enter the password for the SSH user.
 
-3. Once the file has been uploaded, return to the SSH connection to your HDInsight cluster and use the following commands to create the `wordcount` and `wordcount-example-Counts-changelog` topics:
+3. Once the file has been uploaded, return to the SSH connection to your HDInsight cluster and use the following commands to create the `wordcounts` and `wordcount-example-Counts-changelog` topics:
 
-        /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount --zookeeper $KAFKAZKHOSTS
+        /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcounts --zookeeper $KAFKAZKHOSTS
         /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --zookeeper $KAFKAZKHOSTS
 
 4. Use the following command to start the streaming process in the background:
