@@ -3,7 +3,8 @@ page_type: sample
 languages:
 - java
 products:
-- azure
+  - azure
+  - azure-hdinsight
 description: "The examples in this repository demonstrate how to use the Kafka Consumer, Producer, and Streaming APIs with a Kafka on HDInsight cluster."
 urlFragment: hdinsight-kafka-java-get-started
 ---
