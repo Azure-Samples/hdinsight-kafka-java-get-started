@@ -147,12 +147,17 @@ This conversation was marked as resolved by anusricorp
 
     > [!Note]  
     > This command requires Ambari access. If your cluster is behind an NSG, run this command from a machine that can access Ambari.
+1. First give access to users in the Ranger policies. https://docs.microsoft.com/en-us/azure/hdinsight/domain-joined/apache-domain-joined-run-kafka
+Then for the user, get a kerberos ticket with the command. Enter the password when it prompts for it. 
+
+    ```bash
+    kinit <username>
+    ```
 1. Create Kafka topic, `myTest`, by entering the following command:
 
     ```bash
     java -jar -Djava.security.auth.login.config=/usr/hdp/current/kafka-broker/config/kafka_client_jaas.conf kafka-producer-consumer.jar create myTest $KAFKABROKERS
     ```
-
 1. To run the producer and write data to the topic, use the following command:
 
     ```bash
