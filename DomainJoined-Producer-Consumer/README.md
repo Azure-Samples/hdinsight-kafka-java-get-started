@@ -1,12 +1,11 @@
 ---
 page_type: sample
-languages:
-- java
-  products:
-    - azure
-    - azure-hdinsight
-      description: "The examples in this repository demonstrate how to use the Kafka Consumer, Producer, and Streaming APIs with a Kerberized Kafka on HDInsight cluster."
-      urlFragment: hdinsight-kafka-java-get-started
+languages: java
+products:
+- azure
+- azure-hdinsight
+description: "Examples in this repository demonstrate how to use the Kafka Consumer, Producer, and Streaming APIs with a Kerberized Kafka on HDInsight cluster."
+urlFragment: hdinsight-kafka-java-get-started
 ---
 
 # Java-based example of using the Kafka Consumer, Producer, and Streaming APIs
@@ -195,7 +194,7 @@ This conversation was marked as resolved by anusricorp
 
 You will be having an espkafkauser.keytab file in local directory. Now create an espkafkauser_jaas.conf jaas config file with data given below
 
-```json
+```
 KafkaClient {
   com.sun.security.auth.module.Krb5LoginModule required
   useKeyTab=true
@@ -300,7 +299,7 @@ Records stored in Kafka are stored in the order they're received within a partit
 The ESP jar can be built from the code in the [`DomainJoined-Producer-Consumer` subdirectory](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started/tree/master/DomainJoined-Producer-Consumer). Note that the producer and consumer properties ave an additional property `CommonClientConfigs.SECURITY_PROTOCOL_CONFIG` for ESP enabled clusters.
 
 
-2. Facing issue with ESP enabled clusters
+1. Facing issue with ESP enabled clusters
 
-If produce and consume operations fail and you are using an ESP enabled cluster, check that the user `kafka` is present in all Ranger policies. If it is not present, add it to all Ranger policies.      
+If produce and consume operations fail, and you are using an ESP enabled cluster, check that the user `kafka` is present in all Ranger policies. If it is not present, add it to all Ranger policies.      
 
