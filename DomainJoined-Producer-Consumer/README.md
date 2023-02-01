@@ -2,11 +2,11 @@
 page_type: sample
 languages:
 - java
-products:
-  - azure
-  - azure-hdinsight
-description: "The examples in this repository demonstrate how to use the Kafka Consumer, Producer, and Streaming APIs with a Kerberized Kafka on HDInsight cluster."
-urlFragment: hdinsight-kafka-java-get-started
+  products:
+    - azure
+    - azure-hdinsight
+      description: "The examples in this repository demonstrate how to use the Kafka Consumer, Producer, and Streaming APIs with a Kerberized Kafka on HDInsight cluster."
+      urlFragment: hdinsight-kafka-java-get-started
 ---
 
 # Java-based example of using the Kafka Consumer, Producer, and Streaming APIs
@@ -46,11 +46,11 @@ The important things to understand in the `pom.xml` file are:
     </dependency>
     ```
 
-    The `${kafka.version}` entry is declared in the `<properties>..</properties>` section of `pom.xml`, and is configured to the Kafka version of the HDInsight cluster.
+  The `${kafka.version}` entry is declared in the `<properties>..</properties>` section of `pom.xml`, and is configured to the Kafka version of the HDInsight cluster.
 
 * Plugins: Maven plugins provide various capabilities. In this project, the following plugins are used:
 
-    * `maven-compiler-plugin`: Used to set the Java version used by the project to 8. This is the version of Java used by HDInsight 3.6.
+    * `maven-compiler-plugin`: Used to set the Java version used by the project to 8. This is the version of Java used by HDInsight 4.0.
     * `maven-shade-plugin`: Used to generate an uber jar that contains this application as well as any dependencies. It is also used to set the entry point of the application, so that you can directly run the Jar file without having to specify the main class.
 
 ### Producer.java
@@ -70,7 +70,7 @@ KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
 ### Consumer.java
 
-The consumer communicates with the Kafka broker hosts (worker nodes), and reads records in a loop. The following code snippet from the [Consumer.java](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started/blob/master/DomainJoined-Producer-Consumer/src/main/java/com/microsoft/example/Consumer.java) file sets the consumer properties. 
+The consumer communicates with the Kafka broker hosts (worker nodes), and reads records in a loop. The following code snippet from the [Consumer.java](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started/blob/master/DomainJoined-Producer-Consumer/src/main/java/com/microsoft/example/Consumer.java) file sets the consumer properties.
 
 ```java
 KafkaConsumer<String, String> consumer;
@@ -113,13 +113,13 @@ If you would like to skip this step, prebuilt jars can be downloaded from the `P
 
 1. Download and extract the examples from [https://github.com/Azure-Samples/hdinsight-kafka-java-get-started](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started).
 
-2. If you are using **Enterprise Security Package (ESP)** enabled Kafka cluster, you should set the location to `DomainJoined-Producer-Consumer`subdirectory. Use the following command to build the application:
+2. If you are using **Enterprise Security Package (ESP)** enabled Kafka cluster, you should set the location to `DomainJoined-Producer-Consumer` subdirectory. Use the following command to build the application:
 
     ```cmd
     mvn clean package
     ```
 
-    This command creates a directory named `target`, that contains a file named `kafka-producer-consumer-1.0-SNAPSHOT.jar`. For ESP clusters the file will be `kafka-producer-consumer-esp-1.0-SNAPSHOT.jar`
+   This command creates a directory named `target`, that contains a file named `kafka-producer-consumer-1.0-SNAPSHOT.jar`. For ESP clusters the file will be `kafka-producer-consumer-esp-1.0-SNAPSHOT.jar`
 
 3. Replace `sshuser` with the SSH user for your cluster, and replace `CLUSTERNAME` with the name of your cluster. Enter the following command to copy the `kafka-producer-consumer-*.jar` file to your HDInsight cluster. When prompted enter the password for the SSH user.
 
@@ -145,8 +145,8 @@ This conversation was marked as resolved by anusricorp
     export KAFKABROKERS=$(curl -sS -u admin:$password -G https://$clusterName.azurehdinsight.net/api/v1/clusters/$clusterName/services/KAFKA/components/KAFKA_BROKER | jq -r '["\(.host_components[].HostRoles.host_name):9092"] | join(",")' | cut -d',' -f1,2);
     ```
 
-    > [!Note]  
-    > This command requires Ambari access. If your cluster is behind an NSG, run this command from a machine that can access Ambari.
+   > **Note**  
+   This command requires Ambari access. If your cluster is behind an NSG, run this command from a machine that can access Ambari.
 1. Create Kafka topic, `myTest`, by entering the following command:
 
     ```bash
@@ -166,9 +166,99 @@ This conversation was marked as resolved by anusricorp
     scp ./target/kafka-producer-consumer*.jar sshuser@CLUSTERNAME-ssh.azurehdinsight.net:kafka-producer-consumer.jar
     ```
 
-    The records read, along with a count of records, is displayed.
+   The records read, along with a count of records, is displayed.
 
 1. Use __Ctrl + C__ to exit the consumer.
+
+### Run the Example with another User (espkafkauser)
+
+1. To get the Kafka broker hosts, substitute the values for `<clustername>` and `<password>` in the following command and execute it. Use the same casing for `<clustername>` as shown in the Azure portal. Replace `<password>` with the cluster login password, then execute:
+
+    ```bash
+      sudo apt -y install jq
+      export clusterName='<clustername>'
+      export password='<password>'
+      export KAFKABROKERS=$(curl -sS -u admin:$password -G https://$clusterName.azurehdinsight.net/api/v1/clusters/$clusterName/services/KAFKA/components/KAFKA_BROKER | jq -r '["\(.host_components[].HostRoles.host_name):9092"] | join(",")' | cut -d',' -f1,2);
+    ```
+2. Create the keytab file for espkafkauser with below steps
+   ```bash
+    ktutil
+    ktutil: addent -password -p espkafkauser@TEST.COM -k 1 -e RC4-HMAC
+    Password for espkafkauser@TEST.COM:
+    ktutil: wkt espkafkauser.keytab
+    ktutil: q
+   ```
+
+**NOTE:-**
+1. espkafkauser should be part of your domain group and add it in RangerUI to give CRUD operations privileges.
+2. Keep this domain name (TEST.COM) in capital only. Otherwise, kerberos will throw errors at the time of CRUD operations.
+
+You will be having an espkafkauser.keytab file in local directory. Now create an espkafkauser_jaas.conf jaas config file with data given below
+
+```json
+KafkaClient {
+  com.sun.security.auth.module.Krb5LoginModule required
+  useKeyTab=true
+  storeKey=true
+  keyTab="/home/sshuser/espkafkauser.keytab"
+  useTicketCache=false
+  serviceName="kafka"
+  principal="espkafkauser@TEST.COM";
+};
+```
+### Steps to add espkafkauser on RangerUI
+1. Go to overview page of cluster and use Ambari UI URL to open ranger. Enter the Ambari UI credentials and it should work.
+
+![](media/Azure_Portal_UI.png)
+   ```
+   Generic 
+    https://<cluster-endpoint>/ranger
+   
+   Example 
+    https://espkafka.azurehdinsight.net/ranger
+   ```
+
+2. If everything is correct then you will be able to see ranger dashboard. Now click on Kafka link.
+
+![](media/Ranger_UI.png)
+
+
+3. Now we can see policy page where some users like kafka have access to do CRUD operation on alltopics.
+
+![](media/Kafk_Policy_UI.png)
+
+
+4. Now edit the alltopic policy and add espkafkauser in selectuser from dropdown. Click on save policy after changes
+
+![](media/Edit_Policy_UI.png)
+
+![](media/Add_User.png)
+
+
+5. If we are not able to see our user in dropdown then that mean that user is not available in AAD domain.
+
+6. Now Execute CRUD operations in head node for verification
+
+```bash
+# Sample command
+java -jar -Djava.security.auth.login.config=JAAS_CONFIG_FILE_PATH PRODUCER_CONSUMER_ESP_JAR_PATH create $TOPICNAME $KAFKABROKER
+
+# Create
+java -jar -Djava.security.auth.login.config=user_jaas.conf kafka-producer-consumer-esp.jar create $TOPICNAME $KAFKABROKERS
+
+# Describe
+java -jar -Djava.security.auth.login.config=user_jaas.conf kafka-producer-consumer-esp.jar describe $TOPICNAME $KAFKABROKERS
+
+#Produce
+java -jar -Djava.security.auth.login.config=user_jaas.conf kafka-producer-consumer-esp.jar producer $TOPICNAME $KAFKABROKERS
+
+#Consume
+java -jar -Djava.security.auth.login.config=user_jaas.conf kafka-producer-consumer-esp.jar consumer $TOPICNAME $KAFKABROKERS
+
+#Delete
+java -jar -Djava.security.auth.login.config=user_jaas.conf kafka-producer-consumer-esp.jar delete $TOPICNAME $KAFKABROKERS
+```
+
 
 ### Multiple consumers
 
@@ -206,10 +296,10 @@ Records stored in Kafka are stored in the order they're received within a partit
 
     If your cluster is Enterprise Security Pack enabled, use the [pre-built JAR files for producer and consumer](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started/blob/master/Prebuilt-Jars/kafka-producer-consumer-esp.jar).
 
-    
-The ESP jar can be built from from the code in the [`DomainJoined-Producer-Consumer` subdirectory](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started/tree/master/DomainJoined-Producer-Consumer). Note that the producer and consumer properties ave an additional property `CommonClientConfigs.SECURITY_PROTOCOL_CONFIG` for ESP enabled clusters.
 
-    
+The ESP jar can be built from the code in the [`DomainJoined-Producer-Consumer` subdirectory](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started/tree/master/DomainJoined-Producer-Consumer). Note that the producer and consumer properties ave an additional property `CommonClientConfigs.SECURITY_PROTOCOL_CONFIG` for ESP enabled clusters.
+
+
 2. Facing issue with ESP enabled clusters
 
 If produce and consume operations fail and you are using an ESP enabled cluster, check that the user `kafka` is present in all Ranger policies. If it is not present, add it to all Ranger policies.      

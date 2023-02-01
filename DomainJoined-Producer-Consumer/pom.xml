@@ -8,8 +8,8 @@
   <name>kafka-producer-consumer</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <!-- This is the version in HDInsight 3.5 -->
-    <kafka.version>1.1.0</kafka.version>
+    <!-- This is the version in HDInsight 4.0 -->
+    <kafka.version>2.1.1</kafka.version>
   </properties>
   <dependencies>
     <!-- Kafka client for producer/consumer operations -->
@@ -26,7 +26,7 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.3</version>
             <configuration>
-                <!-- HDInsight 3.5 uses Java 8 -->
+                <!-- HDInsight 4.0 uses Java 8 -->
                 <source>1.8</source>
                 <target>1.8</target>
             </configuration>
