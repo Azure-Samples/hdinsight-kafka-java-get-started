@@ -266,16 +266,24 @@ Kafka consumers use a consumer group when reading records. Using the same group 
 The consumer application accepts a parameter that is used as the group ID. For example, the following command starts a consumer using a group ID of `myGroup`:
 
 ```bash
-java -jar kafka-producer-consumer.jar consumer myTest $KAFKABROKERS myGroup
+java -jar -Djava.security.auth.login.config=user_jaas.conf kafka-producer-consumer-esp.jar consumer myTest $KAFKABROKERS myGroup
 ```
 
 Use __Ctrl + C__ to exit the consumer.
 
 To see this process in action, use the following command:
 
+With Kafka as user
 ```bash
-tmux new-session 'java -jar -Djava.security.auth.login.config=/usr/hdp/current/kafka-broker/config/kafka_client_jaas.conf kafka-producer-consumer.jar consumer myTest $KAFKABROKERS myGroup' \
-\; split-window -h 'java -jar -Djava.security.auth.login.config=/usr/hdp/current/kafka-broker/config/kafka_client_jaas.conf kafka-producer-consumer.jar consumer myTest $KAFKABROKERS myGroup' \
+tmux new-session 'java -jar -Djava.security.auth.login.config=/usr/hdp/current/kafka-broker/config/kafka_client_jaas.conf kafka-producer-consumer-esp.jar consumer myTest $KAFKABROKERS myGroup' \
+\; split-window -h 'java -jar -Djava.security.auth.login.config=/usr/hdp/current/kafka-broker/config/kafka_client_jaas.conf kafka-producer-consumer-esp.jar consumer myTest $KAFKABROKERS myGroup' \
+\; attach
+```
+
+With custom user
+```bash
+tmux new-session 'java -jar -Djava.security.auth.login.config=user_jaas.conf kafka-producer-consumer-esp.jar consumer myTest $KAFKABROKERS myGroup' \
+\; split-window -h 'java -jar -Djava.security.auth.login.config=user_jaas.conf kafka-producer-consumer-esp.jar consumer myTest $KAFKABROKERS myGroup' \
 \; attach
 ```
 
