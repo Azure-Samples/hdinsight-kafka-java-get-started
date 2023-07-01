@@ -15,8 +15,8 @@ public class Stream
     public static void main( String[] args ) {
         Properties streamsConfig = new Properties();
         String applicationID = "wordcount-example";
-        String inputTopic = "inputTopic";
-        String outputTopic = "outputTopic";
+        String inputTopic = "test";
+        String outputTopic = "wordcounts";
         // The name must be unique on the Kafka cluster
         streamsConfig.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationID);
         // Brokers
