@@ -8,16 +8,18 @@ import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.TopicDescription;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 import java.util.Properties;
 import java.util.Random;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Producer
 {
+    private static final Logger logger = LoggerFactory.getLogger(Producer.class);
     public static void produce(String brokers, String topicName) throws IOException
     {
 
@@ -44,22 +46,21 @@ public class Producer
         };
 
         String progressAnimation = "|/-\\";
+        int numberOfMessages = 100;
         // Produce a bunch of records
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < numberOfMessages; i++) {
             // Pick a sentence at random
             String sentence = sentences[random.nextInt(sentences.length)];
             // Send the sentence to the test topic
-            try
-            {
+            try {
                 producer.send(new ProducerRecord<String, String>(topicName, sentence)).get();
-            }
-            catch (Exception ex)
-            {
-                System.out.print(ex.getMessage());
-                throw new IOException(ex.toString());
+            } catch (Exception exception) {
+                logger.error("Exception while producing messages: ", exception);
+                throw new IOException(exception.toString());
             }
             String progressBar = "\r" + progressAnimation.charAt(i % progressAnimation.length()) + " " + i;
             System.out.write(progressBar.getBytes());
         }
+        logger.info("Produced Messages: " + numberOfMessages);
     }
 }
