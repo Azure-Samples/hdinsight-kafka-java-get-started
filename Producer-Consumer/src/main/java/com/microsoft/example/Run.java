@@ -5,9 +5,11 @@ import java.util.UUID;
 import java.io.PrintWriter;
 import java.io.File;
 import java.lang.Exception;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 // Handle starting producer or consumer
 public class Run {
+    private static final Logger logger = LoggerFactory.getLogger(Run.class);
     public static void main(String[] args) throws IOException {
         if(args.length < 3) {
             usage();
@@ -45,8 +47,7 @@ public class Run {
     }
     // Display usage
     public static void usage() {
-        System.out.println("Usage:");
-        System.out.println("kafka-example.jar <producer|consumer|describe|create|delete> <topicName> brokerhosts [groupid]");
+        logger.info("Usage: \n kafka-example.jar <producer|consumer|describe|create|delete> <topicName> brokerhosts [groupid]");
         System.exit(1);
     }
 }

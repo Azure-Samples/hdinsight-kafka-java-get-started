@@ -9,15 +9,26 @@
   <url>http://maven.apache.org</url>
   <properties>
     <!-- This is the Kafka version in HDInsight 4.0 and above -->
-    <kafka.version>2.1.1</kafka.version>
+      <kafka.version>2.1.1</kafka.version>
+      <slf4j.version>2.0.7</slf4j.version>
   </properties>
   <dependencies>
     <!-- Kafka client for producer/consumer operations -->
-    <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka-clients</artifactId>
-      <version>${kafka.version}</version>
-    </dependency>
+      <dependency>
+          <groupId>org.apache.kafka</groupId>
+          <artifactId>kafka-clients</artifactId>
+          <version>${kafka.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+          <version>${slf4j.version}</version>
+      </dependency>
   </dependencies>
   <build>
     <plugins>
