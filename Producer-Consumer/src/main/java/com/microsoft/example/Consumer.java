@@ -3,10 +3,16 @@ package com.microsoft.example;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.common.config.SslConfigs;
+
 import java.util.Properties;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Consumer {
+    private static final Logger logger = LoggerFactory.getLogger(Consumer.class);
     public static int consume(String brokers, String groupId, String topicName) {
         // Create a consumer
         KafkaConsumer<String, String> consumer;
@@ -44,7 +50,7 @@ public class Consumer {
                 for(ConsumerRecord<String, String> record: records) {
                     // Display record and count
                     count += 1;
-                    System.out.println( count + ": " + record.value());
+                    logger.info( count + ": " + record.value());
                 }
             }
         }

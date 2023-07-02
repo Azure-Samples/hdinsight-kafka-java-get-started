@@ -4,8 +4,8 @@ languages: java
 products:
 - azure
 - azure-hdinsight
-description: "Examples in this repository demonstrate how to use the Kafka Consumer, Producer, and Streaming APIs with a Kerberized Kafka on HDInsight cluster."
-urlFragment: hdinsight-kafka-java-get-started
+  description: "Examples in this repository demonstrate how to use the Kafka Consumer, Producer, and Streaming APIs with a Kerberized Kafka on HDInsight cluster."
+  urlFragment: hdinsight-kafka-java-get-started
 ---
 
 # Java-based example of using the Kafka Consumer, Producer, and Streaming APIs
@@ -39,9 +39,9 @@ The important things to understand in the `pom.xml` file are:
     ```xml
     <!-- Kafka client for producer/consumer operations -->
     <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${kafka.version}</version>
     </dependency>
     ```
 
@@ -90,7 +90,8 @@ properties.setProperty("auto.offset.reset","earliest");
 consumer = new KafkaConsumer<>(properties);
 ```
 
-Notice the important property added for ESP cluster. This is critical to add in AdminClient, Producer and Consumer.  properties.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+Notice the important property added for ESP cluster. This is critical to add in AdminClient, Producer and Consumer.
+`properties.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");`<br>
 In this code, the consumer is configured to read from the start of the topic (`auto.offset.reset` is set to `earliest`.)
 
 ### Run.java
@@ -101,16 +102,16 @@ The [Run.java](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started
 
 Download the jars from the [Kafka Get Started Azure sample](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started/tree/master/Prebuilt-Jars). If your cluster is **Enterprise Security Package (ESP)** enabled, use kafka-producer-consumer-esp.jar. Use the command below to copy the jars to your cluster.
 
-    ```cmd
-    scp kafka-producer-consumer-esp.jar sshuser@CLUSTERNAME-ssh.azurehdinsight.net:kafka-producer-consumer.jar
-    ```
+```cmd
+scp kafka-producer-consumer-esp.jar sshuser@CLUSTERNAME-ssh.azurehdinsight.net:kafka-producer-consumer.jar
+```
 
 ## Build the JAR files from code
 
 
-If you would like to skip this step, prebuilt jars can be downloaded from the `Prebuilt-Jars` subdirectory. Download the kafka-producer-consumer.jar. If your cluster is **Enterprise Security Package (ESP)** enabled, use kafka-producer-consumer-esp.jar. Execute step 3 to copy the jar to your HDInsight cluster.
+If you would like to skip this step, prebuilt jars can be downloaded from the `Prebuilt-Jars` subdirectory. Download the `kafka-producer-consumer.jar`. If your cluster is **Enterprise Security Package (ESP)** enabled, use `kafka-producer-consumer-esp.jar`. Execute step 3 to copy the jar to your HDInsight cluster.
 
-1. Download and extract the examples from [https://github.com/Azure-Samples/hdinsight-kafka-java-get-started](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started).
+1. Download and extract the examples from [Hdinsight-Kafka-Java](https://github.com/Azure-Samples/hdinsight-kafka-java-get-started).
 
 2. If you are using **Enterprise Security Package (ESP)** enabled Kafka cluster, you should set the location to `DomainJoined-Producer-Consumer` subdirectory. Use the following command to build the application:
 
@@ -189,10 +190,10 @@ This conversation was marked as resolved by anusricorp
    ```
 
 **NOTE:-**
-1. espkafkauser should be part of your domain group and add it in RangerUI to give CRUD operations privileges.
-2. Keep this domain name (TEST.COM) in capital only. Otherwise, kerberos will throw errors at the time of CRUD operations.
+1. `espkafkauser` should be part of your domain group and add it in RangerUI to give CRUD operations privileges.
+2. Keep this domain name `(TEST.COM)` in capital letters only. Otherwise, kerberos will throw errors at the time of CRUD operations.
 
-You will be having an espkafkauser.keytab file in local directory. Now create an espkafkauser_jaas.conf jaas config file with data given below
+You will be having an `espkafkauser.keytab` file in local directory. Now create an `espkafkauser_jaas.conf` jaas config file with data given below
 
 ```
 KafkaClient {
@@ -227,16 +228,21 @@ KafkaClient {
 ![](media/Kafk_Policy_UI.png)
 
 
-4. Now edit the alltopic policy and add espkafkauser in selectuser from dropdown. Click on save policy after changes
+4. Now edit the `alltopic` policy and add `espkafkauser` in select user from dropdown. Click on save policy after changes
 
 ![](media/Edit_Policy_UI.png)
 
 ![](media/Add_User.png)
 
+5. If HDI version is `5.1` then  edit the `allconsumer` policy and add `espkafkauser` in select user from dropdown. Click on save policy after changes
 
-5. If we are not able to see our user in dropdown then that mean that user is not available in AAD domain.
+![](media/Edit_AllConsumerPolicy.png)
 
-6. Now Execute CRUD operations in head node for verification
+![](media/Add_ESPKafkaUser.png)
+
+6. If we are not able to see our user in dropdown then that mean that user is not available in AAD domain.
+
+7. Now Execute CRUD operations in head node for verification
 
 ```bash
 # Sample command

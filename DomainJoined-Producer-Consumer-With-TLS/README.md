@@ -111,12 +111,12 @@ properties.setProperty("auto.offset.reset","earliest");
 consumer = new KafkaConsumer<>(properties);
 ```
 
-#### Note:
-The important properties added for ESP with TLS Encryption enabled cluster. 
+> **Note:**<br>
+> The important properties added for ESP with TLS Encryption enabled cluster. 
 This is critical to add in `AdminClient, Producer and Consumer`.
 It is possible that your ESP cluster might have TLS Encryption and Authentication both. Please change the configurations based on 
 [Enable TLS Encryption on ESP cluster](https://learn.microsoft.com/en-us/azure/hdinsight/kafka/apache-esp-kafka-ssl-encryption-authentication)
-```
+```java
 // Set the TLS Encryption for Domain Joined TLS Encrypted cluster
 properties.setProperty(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
 properties.setProperty("ssl.mechanism", "GSSAPI");
@@ -164,7 +164,7 @@ Download the jars from the [Kafka Get Started Azure sample](https://github.com/A
     ```
 
 ## <a id="run"></a> Run the example
-This conversation was marked as resolved by piyushgupta
+This conversation was marked as resolved by `piyushgupta`
 
 1. Replace `sshuser` with the SSH user for your cluster, and replace `CLUSTERNAME` with the name of your cluster. Open an SSH connection to the cluster, by entering the following command. If prompted, enter the password for the SSH user account.
 
@@ -181,7 +181,7 @@ This conversation was marked as resolved by piyushgupta
     export KAFKABROKERS=$(curl -sS -u admin:$password -G https://$clusterName.azurehdinsight.net/api/v1/clusters/$clusterName/services/KAFKA/components/KAFKA_BROKER | jq -r '["\(.host_components[].HostRoles.host_name):9092"] | join(",")' | cut -d',' -f1,2);
     ```
 
-   > **Note**  
+    > **Note:**  
    This command requires Ambari access. If your cluster is behind an NSG, run this command from a machine that can access Ambari.
 1. Create Kafka topic, `myTest`, by entering the following command:
 
@@ -216,7 +216,7 @@ This conversation was marked as resolved by piyushgupta
       export password='<password>'
       export KAFKABROKERS=$(curl -sS -u admin:$password -G https://$clusterName.azurehdinsight.net/api/v1/clusters/$clusterName/services/KAFKA/components/KAFKA_BROKER | jq -r '["\(.host_components[].HostRoles.host_name):9092"] | join(",")' | cut -d',' -f1,2);
     ```
-2. Create the keytab file for espkafkauser with below steps
+2. Create the keytab file for `espkafkauser` with below steps
    ```bash
     ktutil
     ktutil: addent -password -p espkafkauser@TEST.COM -k 1 -e RC4-HMAC
@@ -226,10 +226,10 @@ This conversation was marked as resolved by piyushgupta
    ```
 
 **NOTE:-**
-1. espkafkauser should be part of your domain group and add it in RangerUI to give CRUD operations privileges.
-2. Keep this domain name (TEST.COM) in capital only. Otherwise, kerberos will throw errors at the time of CRUD operations.
+1. `espkafkauser` should be part of your domain group and add it in RangerUI to give CRUD operations privileges.
+2. Keep this domain name `(TEST.COM)` in capital only. Otherwise, kerberos will throw errors at the time of CRUD operations.
 
-You will be having an espkafkauser.keytab file in local directory. Now create an espkafkauser_jaas.conf jaas config file with data given below
+You will be having an `espkafkauser.keytab` file in local directory. Now create an `espkafkauser_jaas.conf` jaas config file with data given below
 
 ```
 KafkaClient {
@@ -264,16 +264,21 @@ KafkaClient {
 ![](media/Kafk_Policy_UI.png)
 
 
-4. Now edit the alltopic policy and add espkafkauser in selectuser from dropdown. Click on save policy after changes
+4. Now edit the `alltopic` policy and add `espkafkauser` in select user from dropdown. Click on save policy after changes
 
 ![](media/Edit_Policy_UI.png)
 
 ![](media/Add_User.png)
 
+5. If HDI version is `5.1` then  edit the `allconsumer` policy and add `espkafkauser` in select user from dropdown. Click on save policy after changes
 
-5. If we are not able to see our user in dropdown then that mean that user is not available in AAD domain.
+![](media/Edit_AllConsumerPolicy.png)
 
-6. Now Execute CRUD operations in head node for verification
+![](media/Add_ESPKafkaUser.png)
+
+6. If we are not able to see our user in dropdown then that mean that user is not available in AAD domain.
+
+7. Now Execute CRUD operations in head node for verification
 
 ```bash
 # Sample command
