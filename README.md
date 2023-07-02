@@ -17,9 +17,9 @@ There are two projects included in this repository:
 
 * Producer-Consumer: This contains a producer and consumer that use a Kafka topic named `test`.
 
-* Streaming: This contains an application that uses the Kafka streaming API (in Kafka 0.10.0 or higher) that reads data from the `test` topic, splits the data into words, and writes a count of words into the `wordcounts` topic.
+* Streaming: This contains an application that uses the Kafka streaming API (in Kafka 2.1.1 or higher) that reads data from the `test` topic, splits the data into words, and writes a count of words into the `wordcounts` topic.
 
-NOTE: This both projects assume Kafka 0.10.0, which is available with Kafka on HDInsight cluster version 3.6.
+NOTE: This both projects assume Kafka 2.1.1 or higher, which is available with Kafka on HDInsight cluster version 4.0 or higher.
 
 ## Producer and Consumer
 
@@ -46,13 +46,12 @@ To run the consumer and producer example, use the following steps:
 
 6. Use SSH to connect to the cluster:
 
-        ssh USERNAME@CLUSTERNAME
+        ssh USERNAME@CLUSTERNAME.DOMAINNAME
 
 7. Use the following commands in the SSH session to get the Zookeeper hosts and Kafka brokers for the cluster. You need this information when working with Kafka. Note that JQ is also installed, as it makes it easier to parse the JSON returned from Ambari. Replace __PASSWORD__ with the login (admin) password for the cluster. Replace __KAFKANAME__ with the name of the Kafka on HDInsight cluster.
 
         sudo apt -y install jq
         export KAFKAZKHOSTS=`curl -sS -u admin:$PASSWORD -G https://$CLUSTERNAME.azurehdinsight.net/api/v1/clusters/$CLUSTERNAME/services/ZOOKEEPER/components/ZOOKEEPER_SERVER | jq -r '["\(.host_components[].HostRoles.host_name):2181"] | join(",")' | cut -d',' -f1,2`
-
         export KAFKABROKERS=`curl -sS -u admin:$PASSWORD -G https://$CLUSTERNAME.azurehdinsight.net/api/v1/clusters/$CLUSTERNAME/services/KAFKA/components/KAFKA_BROKER | jq -r '["\(.host_components[].HostRoles.host_name):9092"] | join(",")' | cut -d',' -f1,2`
 
 8. Use the following to verify that the environment variables have been correctly populated:
@@ -68,13 +67,22 @@ To run the consumer and producer example, use the following steps:
    
         wn1-kafka.eahjefxxp1netdbyklgqj5y1ud.cx.internal.cloudapp.net:9092,wn0-kafka.eahjefxxp1netdbyklgqj5y1ud.cx.internal.cloudapp.net:9092
 
-    NOTE: This information may change as you perform scaling operations on the cluster, as this adds and removes worker nodes. You should always retrieve the Zookeeper and Broker information before working with Kafka.
+    **NOTE:** This information may change as you perform scaling operations on the cluster, as this adds and removes worker nodes. You should always retrieve the Zookeeper and Broker information before working with Kafka.
     
-    IMPORTANT: You don't have to provide all broker or Zookeeper nodes. A connection to one broker or Zookeeper node can be used to learn about the others. In this example, the list of hosts is trimmed to two entries.
-
+    **IMPORTANT:** 
+    1. You don't have to provide all broker or Zookeeper nodes. A connection to one broker or Zookeeper node can be used to learn about the others. In this example, the list of hosts is trimmed to two entries.
+    2. If HDI version is `4.0` or `5.0` then we will use zookeeper parameter in all kafka cli commands.
+    3. If HDI version is `5.1` then we will use bootstrap-server parameter in all kafka cli commands.
+   
 9. This example uses a topic named `test`. Use the following to create this topic:
-
-        /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic test --zookeeper $KAFKAZKHOSTS
+- **If HDI version is 4.0 or 5.0**<br>
+   ```shell
+   /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic test --zookeeper $KAFKAZKHOSTS
+   ```
+- **If HDI version is 5.1**<br>
+   ```shell
+   /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic test --bootstrap-server $KAFKABROKERS
+   ```
 
 10. Use the producer-consumer example to write records to the topic:
    
@@ -90,7 +98,7 @@ To run the consumer and producer example, use the following steps:
 
 ## Streaming
 
-NOTE: The streaming example expects that you have already setup the `test` topic from the previous section.
+**NOTE:** The streaming example expects that you have already set up the `test` topic from the previous section.
 
 1. On your development environment, change to the `Streaming` directory and use the following to create a jar for this project:
 
@@ -103,15 +111,22 @@ NOTE: The streaming example expects that you have already setup the `test` topic
     Replace **SSHUSER** with the SSH user for your cluster, and replace **CLUSTERNAME** with the name of your cluster. When prompted enter the password for the SSH user.
 
 3. Once the file has been uploaded, return to the SSH connection to your HDInsight cluster and use the following commands to create the `wordcounts` and `wordcount-example-Counts-changelog` topics:
-
-        /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcounts --zookeeper $KAFKAZKHOSTS
-        /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --zookeeper $KAFKAZKHOSTS
+- **If HDI version is 4.0 or 5.0**<br>
+   ```shell
+   /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcounts --zookeeper $KAFKAZKHOSTS<br> 
+   /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --zookeeper $KAFKAZKHOSTS<br>
+   ```
+- **If HDI version is 5.1**<br>
+  ```shell
+  /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcounts --bootstrap-server $KAFKABROKERS<br>
+  /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --bootstrap-server $KAFKABROKERS<br> 
+  ```
 
 4. Use the following command to start the streaming process in the background:
 
         java -jar kafka-streaming.jar $KAFKABROKERS 2>/dev/null &
 
-4. While it is running, use the producer to send messages to the `test` topic:
+5. While it is running, use the producer to send messages to the `test` topic:
 
         java -jar kafka-producer-consumer.jar producer test $KAFKABROKERS &>/dev/null &
 
