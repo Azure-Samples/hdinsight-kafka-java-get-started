@@ -113,13 +113,13 @@ To run the consumer and producer example, use the following steps:
 3. Once the file has been uploaded, return to the SSH connection to your HDInsight cluster and use the following commands to create the `wordcounts` and `wordcount-example-Counts-changelog` topics:
 - **If HDI version is 4.0 or 5.0**<br>
    ```shell
-   /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcounts --zookeeper $KAFKAZKHOSTS<br> 
-   /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --zookeeper $KAFKAZKHOSTS<br>
+   /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcounts --zookeeper $KAFKAZKHOSTS
+   /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --zookeeper $KAFKAZKHOSTS
    ```
 - **If HDI version is 5.1**<br>
   ```shell
-  /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcounts --bootstrap-server $KAFKABROKERS<br>
-  /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --bootstrap-server $KAFKABROKERS<br> 
+  /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcounts --bootstrap-server $KAFKABROKERS
+  /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --replication-factor 2 --partitions 8 --topic wordcount-example-Counts-changelog --bootstrap-server $KAFKABROKERS 
   ```
 
 4. Use the following command to start the streaming process in the background:
