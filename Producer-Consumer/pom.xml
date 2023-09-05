@@ -9,7 +9,7 @@
   <url>http://maven.apache.org</url>
   <properties>
     <!-- This is the Kafka version in HDInsight 4.0 and above -->
-    <kafka.version>2.1.1</kafka.version>
+    <kafka.version>2.6.3</kafka.version>
   </properties>
   <dependencies>
     <!-- Kafka client for producer/consumer operations -->
